@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Encuesta;
 use App\Models\Participantes;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\RedesSocialesController;
+use App\Models\RedesSociales;
 
 class EncuestaController extends Controller
 {
@@ -44,20 +46,28 @@ class EncuestaController extends Controller
     }
 
     public function avgRedesSociales()
-
     {
-        $encuesta =  DB::table('encuesta')->select('AVG(time_facebook) as facebook')->get();
-        return $encuesta;
+         $encuesta = Encuesta::select(DB::raw("avg(time_facebook) as facebook, avg(time_instagram) as instgram, avg(time_whatsapp) as whatsapp, avg(time_twitter) as twitter, avg(time_tiktok) as tiktok"))->get();
+         return $encuesta[0];
     }
 
 
-    public function update(Request $request, $id)
+    public function countRedesSociales()
     {
-        //
+        $redesSociales = RedesSociales::all();
+        $array = [];
+        foreach ($redesSociales as $redSocial) {
+            $encuesta = Encuesta::where("rs_favorita", "=", $redSocial->id)->get();
+           array_push($array,[$redSocial->red_social => $encuesta->count()]);
+        }
+        return $array;
+       
+
     }
 
-    public function destroy($id)
+    public function edadesRedesSociales()
     {
-        //
+        $encuesta = Encuesta::select(DB::raw('edad , rs_favorita, count(rs_favorita) as conteo'))->join('participantes', 'participantes.id','=','encuesta.id_participante')->groupBy('edad' , 'rs_favorita')->get();
+    return $encuesta;
     }
 }

@@ -16,4 +16,6 @@ Route::get('/redesSociales', 'index');
 Route::controller(EncuestaController::class)->group(function () {
     Route::post('/encuesta', 'store');
     Route::get('/promedioRedesSociales', 'avgRedesSociales');
+    Route::get('/conteoRedes', 'countRedesSociales');
+    Route::get('/edadesRedes', 'edadesRedesSociales');
     });
